@@ -131,13 +131,21 @@ form=Sphere(-3)
 form=Cylinder(-2)
 form=Penny(-1)
 form=w=Spheroid(w>0) *)
-PHillCoef[\[Kappa]o_,\[Mu]o_,form_] := Block[{SeCoef ,CoCoefInv,PHill},
+(*PHillCoef[\[Kappa]o_,\[Mu]o_,form_] := Block[{SeCoef ,CoCoefInv,PHill},
 If[form==-3,SeCoef  = From4thTenToHillCoef[EshSphere[\[Kappa]o,\[Mu]o],3]];
 If[form==-2,SeCoef = From4thTenToHillCoef[EshCyl[\[Kappa]o,\[Mu]o],3]];
 If[form==-1,SeCoef  = From4thTenToHillCoef[EshPenny[\[Kappa]o,\[Mu]o],3]];
 If[form>0,SeCoef  = From4thTenToHillCoef[EshSpheroid[\[Kappa]o,\[Mu]o,form],3]];
 CoCoefInv=Inv4thHillCoef[FromIsoCoef2HillCoef[3\[Kappa]o,2\[Mu]o]];
 PHill = Contr4thTenHillBasis[SeCoef,CoCoefInv];
+PHill]*)
+
+PHillCoef[\[Kappa]o_,\[Mu]o_,form_] := Block[{SeCoef ,CoCoefInv,PHill,w},
+If[form==-3,SeCoef  = From4thTenToHillCoef[EshSphere[\[Kappa]o,\[Mu]o],3];CoCoefInv=Inv4thHillCoef[FromIsoCoef2HillCoef[3\[Kappa]o,2\[Mu]o]];PHill = Contr4thTenHillBasis[SeCoef,CoCoefInv];];
+If[form==-2,SeCoef = From4thTenToHillCoef[EshCyl[\[Kappa]o,\[Mu]o],3];CoCoefInv=Inv4thHillCoef[FromIsoCoef2HillCoef[3\[Kappa]o,2\[Mu]o]];PHill = Contr4thTenHillBasis[SeCoef,CoCoefInv];];
+If[form==-1,SeCoef  = From4thTenToHillCoef[EshPenny[\[Kappa]o,\[Mu]o],3];CoCoefInv=Inv4thHillCoef[FromIsoCoef2HillCoef[3\[Kappa]o,2\[Mu]o]];PHill = Contr4thTenHillBasis[SeCoef,CoCoefInv];];
+If[form>1,w = form;PHill= N[{(w (3 w Sqrt[-1+w^2] (-3 \[Kappa]o+(-3+2 w^2) \[Mu]o)+((3+6 w^2) \[Kappa]o+(7-4 w^2) \[Mu]o) ArcCosh[w]))/(4 (-1+w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o)),-((w (3 \[Kappa]o+\[Mu]o) (-3 w Sqrt[-1+w^2]+ArcCosh[w]+2 w^2 ArcCosh[w]))/(4 (-1+w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o))),-((w (3 \[Kappa]o+\[Mu]o) (-3 w Sqrt[-1+w^2]+ArcCosh[w]+2 w^2 ArcCosh[w]))/(4 (-1+w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o))),(-3 Sqrt[-1+w^2] (-2 \[Mu]o+3 w^2 (\[Kappa]o+\[Mu]o))+w ((3+6 w^2) \[Kappa]o+(-5+8 w^2) \[Mu]o) ArcCosh[w])/(2 (-1+w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o)),(w (w Sqrt[-1+w^2] (3 (-5+2 w^2) \[Kappa]o+(-17+14 w^2) \[Mu]o)+3 (3 \[Kappa]o+(5-4 w^2) \[Mu]o) ArcCosh[w]))/(8 (-1+w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o)),(Sqrt[-1+w^2] (3 (2+3 w^2+w^4) \[Kappa]o+2 (4-3 w^2+2 w^4) \[Mu]o)-3 w (3 (1+w^2) \[Kappa]o+2 \[Mu]o) ArcCosh[w])/(4 (-1+w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o))}]];
+If[0<form<1,w = form;PHill=N[{(w (3 w Sqrt[1-w^2] (-3 \[Kappa]o+(-3+2 w^2) \[Mu]o)+((3+6 w^2) \[Kappa]o+(7-4 w^2) \[Mu]o) ArcCos[w]))/(4 (1-w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o)),-((w (3 \[Kappa]o+\[Mu]o) (-3 w Sqrt[1-w^2]+ArcCos[w]+2 w^2 ArcCos[w]))/(4 (1-w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o))),-((w (3 \[Kappa]o+\[Mu]o) (-3 w Sqrt[1-w^2]+ArcCos[w]+2 w^2 ArcCos[w]))/(4 (1-w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o))),(-3 Sqrt[1-w^2] (-2 \[Mu]o+3 w^2 (\[Kappa]o+\[Mu]o))+w ((3+6 w^2) \[Kappa]o+(-5+8 w^2) \[Mu]o) ArcCos[w])/(2 (1-w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o)),(w (w Sqrt[1-w^2] (3 (-5+2 w^2) \[Kappa]o+(-17+14 w^2) \[Mu]o)+3 (3 \[Kappa]o+(5-4 w^2) \[Mu]o) ArcCos[w]))/(8 (1-w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o)),(Sqrt[1-w^2] (3 (2+3 w^2+w^4) \[Kappa]o+2 (4-3 w^2+2 w^4) \[Mu]o)-3 w (3 (1+w^2) \[Kappa]o+2 \[Mu]o) ArcCos[w])/(4 (1-w^2)^(5/2) \[Mu]o (3 \[Kappa]o+4 \[Mu]o))}]];
 PHill]
 (* --------------------------------------------------------------------------------------------*)
 
