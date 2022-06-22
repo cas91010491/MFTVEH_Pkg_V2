@@ -88,8 +88,9 @@ MeanFieldSchemes\[Alpha]FreqsATW::usage =
 "MeanFieldSchemesFreqsATW[IdScheme, MatrixPropsIn, InclusionPropsIn,InclusionForm,VolFract,AspectRatSpatDist, MicroPars,
 Mode,var, expminMec,expmaxMec,expminTh,expmaxTh, di, nPartsMec, nPartsTh, Tolfit==0.5] with output: {Mg,Mi,\[Tau]Mi,ErrsFit}"
 
-EshCyl::usage = 
-"EshCyl[\[Kappa]_,\[Mu]_]"
+MeanFieldSchemes\[Alpha]FreqsATWDoubleOP::usage = 
+"MeanFieldSchemesFreqsATW[IdScheme, MatrixPropsIn, InclusionPropsIn,InclusionForm,VolFract,AspectRatSpatDist, MicroPars,
+Mode,var, expminMec,expmaxMec,expminTh,expmaxTh, di, nPartsMec, nPartsTh, Tolfit==0.5] with output: {{dataMec},{dataTh},{Mg,Mi,\[Tau]Mi,ErrsFit}}"
 
 
 Begin["`Private`"]
@@ -560,6 +561,46 @@ ErrsFit[[i]]= FitProps[[i,3]];
 ,{i,8}];
 OP = {Re@Mg,Mi,\[Tau]Mi,ErrsFit};
 OP]
+
+MeanFieldSchemes\[Alpha]FreqsATWDoubleOP[IdScheme_, MatrixProps_, InclusionProps_,formD_:0, MicroPars_,Nw_,Mode_,var_Symbol,
+expminMec_,expmaxMec_,expminTh_,expmaxTh_, di_, nPartsMec_, nPartsTh_, Tolfit_:0.5]:= 
+Block[{EffHill\[Infinity], EffHillF,EffHillOP, \[Alpha]TildeF, Freqs, posMec, posTh, MatrixPropsF,
+dataMec, FitMec, dataTh, FitTh, FitProps, OP,Mg,Mi,\[Tau]Mi,ErrsFit}, 
+(* Computation of the long-term effective response *)
+EffHill\[Infinity] = Flatten@MeanFieldSchemes\[Alpha]ATW[IdScheme,Limit[MatrixProps,var-> 0],InclusionProps,formD,MicroPars,Nw,Mode];
+(* Initialization and setting up for frequency data treatment *)
+Freqs = 10^Range[Min[expminMec,expminTh],Max[expmaxMec,expmaxTh],di];
+posMec = Flatten[Position[Range[Min[expminMec,expminTh],Max[expmaxMec,expmaxTh],di],_?(#==expminMec||#==expmaxMec&)]];
+posTh = Flatten[Position[Range[Min[expminMec,expminTh],Max[expmaxMec,expmaxTh],di],_?(#==expminTh||#==expmaxTh&)]];
+(* Generation of frequency data *)
+MatrixPropsF[s_] := MatrixProps/.{var -> s}; 
+EffHillF = Table[0,{i,Length[Freqs]}];
+Do[EffHillF[[i]] = Flatten@MeanFieldSchemes\[Alpha]ATW[IdScheme, MatrixPropsF[2 \[Pi] I Freqs[[i]]],InclusionProps,formD,MicroPars,Nw,Mode],
+{i,Length[Freqs]}];
+EffHillOP = EffHillF;
+Do[EffHillF[[i]] = EffHillF[[i]]- EffHill\[Infinity],{i,1,Length[EffHillF]}];
+dataMec = Table[0.,{i,6}];
+Do[dataMec[[i]] =  Join[Transpose[{2 \[Pi] Freqs[[posMec[[1]];;posMec[[2]]]]}],Transpose[{Re[EffHillF[[posMec[[1]];;posMec[[2]],i]]]}],
+Transpose[{Im[EffHillF[[posMec[[1]];;posMec[[2]],i]]]}],2],
+{i,6}];
+FitMec = Table[0.,{i,6}];
+Do[FitMec[[i]] = GMMcouples[dataMec[[i]], nPartsMec, Tolfit],{i,6}];
+dataTh = Table[0,{i,2}];
+Do[dataTh[[i]] =  Join[Transpose[{2 \[Pi] Freqs[[posTh[[1]];;posTh[[2]]]]}],Transpose[{Re[EffHillF[[posTh[[1]];;posTh[[2]],6+i]]]}],
+Transpose[{Im[EffHillF[[posTh[[1]];;posTh[[2]],6+i]]]}],2],
+{i,2}];
+FitTh = Table[0,{i,2}];
+Do[FitTh[[i]] = DVEcouples[dataTh[[i]], nPartsTh, Tolfit],{i,2}];
+FitProps = Join[FitMec,FitTh];
+Mg = Table[0,{i,8}]; Mi = Mg; \[Tau]Mi = Mg;ErrsFit = Mg;
+Do[
+Mg[[i]] = EffHill\[Infinity][[i]] + Total[FitProps[[i,1]]];
+Mi[[i]] = FitProps[[i,1]];
+\[Tau]Mi[[i]]= FitProps[[i,2]];
+ErrsFit[[i]]= FitProps[[i,3]];
+,{i,8}];
+OP = {Re@Mg,Mi,\[Tau]Mi,ErrsFit};
+{2 \[Pi] Freqs,EffHillOP,OP}]
 
 
 (* Functions to generate homogenized Prony series *)
