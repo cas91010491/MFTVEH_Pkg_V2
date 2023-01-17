@@ -89,7 +89,7 @@ infl]
 HWfun::emptyarray = "The discret times list is empty";
 HWfun[ws_,ts_List /; Length[ts]>0 ,RealMod_,ImagMod_]:=Block[{aji,bji,A,B,ModTot,Atot,Mods},
 aji= Table[0,{i,Length[ws]},{j,Length[ts]}];
-bji= Table[0,{j,Length[ws]},{i,Length[ts]}];
+bji= Table[0,{i,Length[ws]},{j,Length[ts]}];
 Do[aji[[j,i]]=(ws[[j]]ts[[i]])^2/(1+(ws[[j]]ts[[i]])^2),{j,Length[ws]},{i,Length[ts]}];
 Do[bji[[j,i]]=(ws[[j]]ts[[i]])/(1+(ws[[j]]ts[[i]])^2),{j,Length[ws]},{i,Length[ts]}];
 A = Transpose[aji];B=Transpose[bji]; ModTot= Join[RealMod,ImagMod,1];Atot = Join[A,B,2];
