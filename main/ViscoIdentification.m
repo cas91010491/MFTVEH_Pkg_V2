@@ -93,7 +93,7 @@ bji= Table[0,{j,Length[ws]},{i,Length[ts]}];
 Do[aji[[j,i]]=(ws[[j]]ts[[i]])^2/(1+(ws[[j]]ts[[i]])^2),{j,Length[ws]},{i,Length[ts]}];
 Do[bji[[j,i]]=(ws[[j]]ts[[i]])/(1+(ws[[j]]ts[[i]])^2),{j,Length[ws]},{i,Length[ts]}];
 A = Transpose[aji];B=Transpose[bji]; ModTot= Join[RealMod,ImagMod,1];Atot = Join[A,B,2];
-Mods = PseudoInverse[Atot . Transpose[Atot],Tolerance->10^(-10000)] . (Atot . ModTot);
+Mods = PseudoInverse[Atot . Transpose[Atot],Tolerance->10^(-15)] . (Atot . ModTot);
 Mods]
 HWfun[ws_,ts_List ,RealMod_,ImagMod_] := (Message[HWfun::emptyarray];$Failed)
 
